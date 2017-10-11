@@ -1,0 +1,18 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <form>
+      Name: <input id="namebox" type="text" name="name">
+      Message: <input id="messagebox" type="text" name="message">
+      <input id="submitbutton" type="button" onclick="sendData()" value="Send">
+    </form>
+    <div id="messages"
+	 style="overflow-y: scroll; height:300px; line-height: 0.2;">
+      {% for m in messages %}
+      <p><strong>{{ m.name }}:</strong> <small>{{ m.when }}</small> {{ m.message }}</p>
+      {% end %}
+    </div>
+    <script src="js/server.js"></script>
+  </body>
+</html>
