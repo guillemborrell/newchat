@@ -1,4 +1,6 @@
-var ws = new WebSocket("ws://localhost:8888/chat");
+var ws = new WebSocket("ws://" +
+		       window.location.host +
+		       "/chat");
 var cursor = -1;
 
 function prepend_messages(message) {
