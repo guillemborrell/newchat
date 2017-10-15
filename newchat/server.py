@@ -15,6 +15,7 @@ js_folder = os.path.join(os.path.dirname(__file__), 'js')
 html_folder = os.path.join(os.path.dirname(__file__), 'html')
 
 define("db", default="sqlite://", help="SQLAlchemy engine connection string")
+define("port", default="8888", help="HTTP server port")
 options.parse_command_line()
 engine = create_engine(options.db)
 
@@ -99,7 +100,7 @@ def make_app():
 
 def main():
     app = make_app()
-    app.listen(8888)
+    app.listen(int(options.port))
     tornado.ioloop.IOLoop.current().start()
 
 
