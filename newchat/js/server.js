@@ -1,21 +1,67 @@
 var ws = new WebSocket("ws://localhost:8888/chat");
+var cursor = -1;
+
+function prepend_messages(message) {
+    var messages = document.getElementById("messages");
+    messages.innerHTML = "<p>" +
+	"<strong>" + message.name + ": </strong>" +
+	" <small>" + message.when + "</small>| " +
+	message.message + 
+	"</p>" + messages.innerHTML;
+}
+
+function append_messages(message) {
+    var messages = document.getElementById("messages");
+    messages.innerHTML = messages.innerHTML + "<p>" +
+	"<strong>" + message.name + ": </strong>" +
+	" <small>" + message.when + "</small>| " +
+	message.message + 
+	"</p>";
+    
+}
+
 
 ws.onopen = function() {};
 
 ws.onmessage = function (evt) {
     var message = JSON.parse(evt.data)
-    var messages = document.getElementById("messages");
-    messages.innerHTML = "<p>" +
-	"<strong>" + message.name + ": </strong>" +
-	" <small>" + message.when + "</small> " +
-	message.message + 
-	"</p>" + messages.innerHTML;
+    prepend_messages(message);
 };
 
 function sendData() {
     var m = {"name": document.getElementById("namebox").value,
 	     "message": document.getElementById("messagebox").value}; 
     ws.send(JSON.stringify(m));
+}
+
+function moreMessages(from) {
+    if (from == 1) {
+	return
+    }
+    else {
+	// Cursor has not been used.
+	if (cursor < 0) {
+	    url = "/old?from=" + from;
+	    $.getJSON(url, function (data) {
+		console.log(data);
+		for (var i in data.messages) {
+		    append_messages(data.messages[i]);
+		}
+		cursor = data.last;
+	    })
+	}
+	// Cursor has been used, so button pressed already.
+	else {
+	    url = "/old?from=" + cursor;
+	    $.getJSON(url, function (data) {
+		console.log(data);
+		for (var i in data.messages) {
+		    append_messages(data.messages[i]);
+		}
+		cursor = data.last;
+	    })
+	}
+    }
 }
 
 document.getElementById("messagebox").addEventListener("keyup", function(event) {

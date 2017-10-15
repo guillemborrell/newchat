@@ -12,8 +12,12 @@ import os
 import json
 
 js_folder = os.path.join(os.path.dirname(__file__), 'js')
+
 define("db", default="sqlite://", help="SQLAlchemy engine connection string")
+options.parse_command_line()
+print(options.db)
 engine = create_engine(options.db)
+
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 sess = Session()
@@ -26,10 +30,10 @@ class Message(Base):
     name = Column(String)
     message = Column(String)
 
-    def json(self):
-        return json.dumps({'when': self.when,
-                           'name': self.name,
-                           'message': self.message})
+    def to_dict(self):
+        return {'when': self.when,
+                'name': self.name,
+                'message': self.message}
 
 Base.metadata.create_all(engine)
     
@@ -39,7 +43,27 @@ class MainHandler(tornado.web.RequestHandler):
         messages = sess.query(
             Message).order_by(
                 Message.id.desc()).limit(10).all()
-        self.write(loader.load("home.html").generate(messages=messages))
+        if messages:
+            last = messages[-1].id
+        else:
+            last = 1
+        self.write(loader.load("home.html").generate(messages=messages,
+                                                     last=last))
+
+
+class PreviousMessagesHandler(tornado.web.RequestHandler):
+    def get(self):
+        fr = self.get_argument('from')
+        messages = sess.query(
+            Message).order_by(
+                Message.id.desc()).filter(
+                    Message.id < fr).limit(10).all()
+        if messages:
+            last = messages[-1].id
+        else:
+            last = 1
+        self.write(json.dumps({'messages': [m.to_dict() for m in messages],
+                               'last': last}))
 
         
 class ChatWebSocket(tornado.websocket.WebSocketHandler):
@@ -65,8 +89,9 @@ def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/chat", ChatWebSocket),
+        (r"/old", PreviousMessagesHandler),
         (r"/js/(.*)", tornado.web.StaticFileHandler, {'path': js_folder}),
-    ], debug=True)
+    ], debug=True, autoreload=True)
 
 if __name__ == "__main__":
     app = make_app()
