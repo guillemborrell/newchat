@@ -16,8 +16,7 @@ function append_messages(message) {
 	"<strong>" + message.name + ": </strong>" +
 	" <small>" + message.when + "</small>| " +
 	message.message + 
-	"</p>";
-    
+	"</p>";    
 }
 
 
@@ -30,20 +29,20 @@ ws.onmessage = function (evt) {
 
 function sendData() {
     var m = {"name": document.getElementById("namebox").value,
-	     "message": document.getElementById("messagebox").value}; 
+	     "message": document.getElementById("messagebox").value,
+	     "chat": document.getElementById("chatbox").value}; 
     ws.send(JSON.stringify(m));
 }
 
-function moreMessages(from) {
+function moreMessages(chat, from) {
     if (from == 1) {
 	return
     }
     else {
 	// Cursor has not been used.
 	if (cursor < 0) {
-	    url = "/old?from=" + from;
+	    url = "/old?from=" + from + "&chat=" + chat;
 	    $.getJSON(url, function (data) {
-		console.log(data);
 		for (var i in data.messages) {
 		    append_messages(data.messages[i]);
 		}
@@ -52,9 +51,8 @@ function moreMessages(from) {
 	}
 	// Cursor has been used, so button pressed already.
 	else {
-	    url = "/old?from=" + cursor;
+	    url = "/old?from=" + cursor + "&chat=" + chat;
 	    $.getJSON(url, function (data) {
-		console.log(data);
 		for (var i in data.messages) {
 		    append_messages(data.messages[i]);
 		}

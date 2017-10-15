@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <form>
+      <input id="chatbox" type="hidden" name="chat" value="{{ chat }}">
+      <input id="namebox" type="text" name="name" placeholder="Name">
+      <input id="messagebox" type="text" name="message" placeholder="Message">
+      <input id="submitbutton" type="button" onclick="sendData()" value="Send">
+    </form>
+    <div id="messages"
+	 style="overflow-y: scroll; height:300px; line-height: 0.2; border:1px solid black">
+      {% for m in messages %}
+      <p>
+	<strong>{{ m.name }}:</strong>
+	<small>{{ m.when }}</small>| {{ m.message }}</p>
+      {% end %}
+    </div>
+    <button onclick="moreMessages('{{ chat }}', {{ last }})">Load older</button>
+    <script src="js/server.js"></script>
+  </body>
+</html>
