@@ -1,0 +1,2 @@
+recursive-include newchat/html *
+recursive-include newchat/js *
