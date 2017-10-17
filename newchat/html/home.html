@@ -1,6 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet"
+	  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+	  integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+	  crossorigin="anonymous">
+    <script src="js/jquery-3.2.1.min.js"></script>
   </head>
   <body>
     <form>
@@ -10,9 +15,9 @@
       <input id="submitbutton" type="button" onclick="sendData()" value="Send">
     </form>
     <div id="messages"
-	 style="overflow-y: scroll; height:300px; line-height: 0.2; border:1px solid black">
+	 style="overflow-y: scroll; height:300px; border:1px solid black">
       {% for m in messages %}
-      <p>
+      <p style="margin: 0;">
 	<strong>{{ m.name }}:</strong>
 	<small>{{ m.when }}</small>| {{ m.message }}</p>
       {% end %}

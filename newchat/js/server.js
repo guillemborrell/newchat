@@ -5,7 +5,7 @@ var cursor = -1;
 
 function prepend_messages(message) {
     var messages = document.getElementById("messages");
-    messages.innerHTML = "<p>" +
+    messages.innerHTML = '<p style="margin: 0;">' +
 	"<strong>" + message.name + ": </strong>" +
 	" <small>" + message.when + "</small>| " +
 	message.message + 
@@ -14,7 +14,7 @@ function prepend_messages(message) {
 
 function append_messages(message) {
     var messages = document.getElementById("messages");
-    messages.innerHTML = messages.innerHTML + "<p>" +
+    messages.innerHTML = messages.innerHTML + '<p style="margin: 0;">' +
 	"<strong>" + message.name + ": </strong>" +
 	" <small>" + message.when + "</small>| " +
 	message.message + 
