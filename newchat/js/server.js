@@ -18,7 +18,7 @@ function append_messages(message) {
 	"<strong>" + message.name + ": </strong>" +
 	" <small>" + message.when + "</small>| " +
 	message.message + 
-	"</p>";    
+	"</p>";
 }
 
 

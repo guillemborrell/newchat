@@ -15,8 +15,8 @@
       <input id="messagebox" type="text" name="message" placeholder="Message">
       <input id="submitbutton" type="button" onclick="sendData()" value="Send">
     </form>
-    <div id="messages"
-	 style="overflow-y: scroll; height:300px; border:1px solid black">
+    <div id="messages">
+    	 <!-- style="overflow-y: scroll; height:460px; border:1px solid black" -->
       {% for m in messages %}
       <p style="margin: 0;">
 	<strong>{{ m.name }}:</strong>
