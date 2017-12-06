@@ -10,6 +10,7 @@ from sqlalchemy import Column, Integer, String
 import datetime
 import os
 import json
+import html
 
 js_folder = os.path.join(os.path.dirname(__file__), 'js')
 html_folder = os.path.join(os.path.dirname(__file__), 'html')
@@ -115,6 +116,7 @@ class ChatWebSocket(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         data = json.loads(message)
         data['when'] = datetime.datetime.now().strftime("%d/%m %H:%M")
+        data['message'] = html.escape(data['message'], quote=False)
         data['message'] = prettify(data['message'])
         m = Message(**data)
         sess.add(m)
