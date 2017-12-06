@@ -23,6 +23,34 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 sess = Session()
 
+def prettify(message):
+    image_formats = ['.png','.gif','.jpg','.jpeg']
+    video_formats = ['.mp4','.ogg','.webm']
+    youtube_urls = ['youtube.com','youtu.be']
+    newmessage = list()
+
+    for w in message.split():
+        if any([fmt in w for fmt in video_formats]):
+            newmessage.append(
+                u'<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
+            )
+        elif any([fmt in w for fmt in youtube_urls]):
+            newmessage.append(
+                u'<iframe width="480" height="320" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
+            )
+        elif any([fmt in w for fmt in image_formats]):
+            newmessage.append(
+                u'<a href="{}" target="_blank"><img src="{}" class="img-responsive"></a>'.format(w,w)
+            )
+        elif any([fmt in w for fmt in urls]):
+            newmessage.append(
+                u'<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
+            )
+        else:
+            newmessage.append(w)
+        
+    return ' '.join(newmessage)
+
 
 class Message(Base):
     __tablename__ = 'messages'
@@ -74,12 +102,17 @@ class PreviousMessagesHandler(tornado.web.RequestHandler):
         
 class ChatWebSocket(tornado.websocket.WebSocketHandler):
     connections = set()
+    # def check_origin(self, origin):
+    #     return True
+    
     def open(self):
         self.connections.add(self)
 
     def on_message(self, message):
         data = json.loads(message)
         data['when'] = datetime.datetime.now().strftime("%d/%m %H:%M")
+        data['message'] = prettify(data['message'])
+        print(data)
         m = Message(**data)
         sess.add(m)
         sess.commit()
