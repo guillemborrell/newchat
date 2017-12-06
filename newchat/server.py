@@ -23,10 +23,12 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 sess = Session()
 
+
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
     video_formats = ['.mp4','.ogg','.webm']
     youtube_urls = ['youtube.com','youtu.be']
+    urls = ['http://','https://']
     newmessage = list()
 
     for w in message.split():
@@ -48,7 +50,7 @@ def prettify(message):
             )
         else:
             newmessage.append(w)
-        
+
     return ' '.join(newmessage)
 
 
@@ -65,8 +67,10 @@ class Message(Base):
                 'name': self.name,
                 'message': self.message}
 
+
 Base.metadata.create_all(engine)
-    
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         chat = self.get_argument("chat", "root")
@@ -112,7 +116,6 @@ class ChatWebSocket(tornado.websocket.WebSocketHandler):
         data = json.loads(message)
         data['when'] = datetime.datetime.now().strftime("%d/%m %H:%M")
         data['message'] = prettify(data['message'])
-        print(data)
         m = Message(**data)
         sess.add(m)
         sess.commit()
