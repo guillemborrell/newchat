@@ -9,7 +9,7 @@ setup(name="newchat",
       author_email="guillemborrell@gmail.com",
       packages=["newchat"],
       include_package_data=True,
-      install_requires=["tornado", "sqlalchemy"],
+      install_requires=["tornado", "sqlalchemy", "matplotlib"],
       entry_points={
           'console_scripts': ['newchat=newchat.server:main']
       }

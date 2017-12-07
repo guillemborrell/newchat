@@ -7,10 +7,13 @@ from sqlalchemy import create_engine, and_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import Column, Integer, String
+from matplotlib import mathtext
+from io import StringIO
 import datetime
 import os
 import json
 import html
+import re
 
 js_folder = os.path.join(os.path.dirname(__file__), 'js')
 html_folder = os.path.join(os.path.dirname(__file__), 'html')
@@ -25,13 +28,55 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 sess = Session()
 
+# global font properties for math
+try:
+    font_properties = mathtext.FontProperties()
+    font_properties.set_size(12)
+except NameError:
+    pass
+
+# global regexp
+regexp_latex = re.compile("\\$.*?(?<!\\\\)\\$")
+
+
+def parse_math(message):
+    equations = regexp_latex.findall(message)
+
+    replacements = list()
+    for eq in equations:
+        output = StringIO()
+        try:
+            mathtext.math_to_image(eq,
+                                   output,
+                                   dpi=72,
+                                   prop=font_properties,
+                                   format='svg')
+            svg_equation = ''.join(output.getvalue().split('\n')[4:])
+            replacements.append(svg_equation)
+
+        except ValueError:
+            replacements.append('<i>Error in equation</i>')
+
+        output.close()
+
+    newmessage = regexp_latex.sub('{}', message)
+
+    try:
+        newmessage = newmessage.format(*replacements)
+    except:
+        newmessage = 'Could not understand your message'
+
+    return newmessage
+
 
 def prettify(message):
-    image_formats = ['.png','.gif','.jpg','.jpeg']
-    video_formats = ['.mp4','.ogg','.webm']
-    youtube_urls = ['youtube.com','youtu.be']
-    urls = ['http://','https://']
+    image_formats = ['.png', '.gif', '.jpg', '.jpeg']
+    video_formats = ['.mp4', '.ogg', '.webm']
+    youtube_urls = ['youtube.com', 'youtu.be']
+    urls = ['http://', 'https://']
     newmessage = list()
+
+    message = parse_math(message)
 
     for w in message.split():
         if any([fmt in w for fmt in video_formats]):
@@ -80,7 +125,7 @@ class MainHandler(tornado.web.RequestHandler):
         messages = sess.query(
             Message).filter(
                 Message.chat == chat).order_by(
-                    Message.id.desc()).limit(10).all()
+                    Message.id.desc()).limit(20).all()
         if messages:
             last = messages[-1].id
         else:
