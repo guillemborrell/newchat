@@ -14,6 +14,7 @@ import html
 
 js_folder = os.path.join(os.path.dirname(__file__), 'js')
 html_folder = os.path.join(os.path.dirname(__file__), 'html')
+css_folder = os.path.join(os.path.dirname(__file__), 'css')
 
 define("db", default="sqlite://", help="SQLAlchemy engine connection string")
 define("port", default="8888", help="HTTP server port")
@@ -133,7 +134,8 @@ def make_app():
         (r"/chat", ChatWebSocket),
         (r"/old", PreviousMessagesHandler),
         (r"/js/(.*)", tornado.web.StaticFileHandler, {'path': js_folder}),
-    ], debug=True, autoreload=True)
+        (r"/css/(.*)", tornado.web.StaticFileHandler, {'path': css_folder}),
+    ])
 
 
 def main():

@@ -34,6 +34,7 @@ function sendData() {
 	     "message": document.getElementById("messagebox").value,
 	     "chat": document.getElementById("chatbox").value}; 
     ws.send(JSON.stringify(m));
+    document.getElementById("messagebox").value = "";
 }
 
 function moreMessages(chat, from) {
