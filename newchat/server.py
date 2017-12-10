@@ -9,6 +9,7 @@ from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import Column, Integer, String
 from matplotlib import mathtext
 from io import StringIO
+import matplotlib as mpl
 import datetime
 import os
 import json
@@ -18,6 +19,9 @@ import re
 js_folder = os.path.join(os.path.dirname(__file__), 'js')
 html_folder = os.path.join(os.path.dirname(__file__), 'html')
 css_folder = os.path.join(os.path.dirname(__file__), 'css')
+
+mpl.rcParams['mathtext.fontset'] = 'cm'
+mpl.rcParams['mathtext.rm'] = 'serif'
 
 define("db", default="sqlite://", help="SQLAlchemy engine connection string")
 define("port", default="8888", help="HTTP server port")
